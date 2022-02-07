@@ -14,3 +14,9 @@ Func_birthdeath_GC_logistic4 Varying initial conditions of the distribution for 
 the initial conditions can also be varied in Func_birthdeath_GC_logistic9
 
 Func_birthdeath_GC_logistic3 varying selection and selection paramters.
+
+
+The evolution model is also stored here. This was written by me.
+EvolutionDiscrete is the main model in the paper.
+FuncEvSSMemory3 is the continuous model.
+EvolutionDiscretePCs is the model in the supplementary when plasma cells leave the SPF.
