@@ -262,13 +262,13 @@ y=dt/6*(k1BC+2*k2BC+2*k3BC+k4BC);
 GCsumfitness=sum(GCBCs.*GCfitness);
     GCmeanfitness=GCsumfitness/sum(GCBCs);
 % GCBCs(t+1,:)=GCBCs+(0.5*GCBCs.*GCfitness/GCmeanfitness+0.5/(length(GCfitness)-1)*(GCsumfitness-GCBCs.*GCfitness)/GCsumfitness)*dt*Rg;
-k1GCBC=((1-mu)*GCBCs.*GCfitness/GCmeanfitness+mu/(length(GCfitness)-1)*(GCsumfitness-GCBCs.*GCfitness)/GCsumfitness)*Rg;
+k1GCBC=((1-mu)*GCBCs.*GCfitness/GCmeanfitness+mu/(length(GCfitness)-1)*(GCsumfitness-GCBCs.*GCfitness)/GCmeanfitness)*Rg;
  k2GCsumfitness=sum((GCBCs+dt*0.5*k1GCBC).*GCfitness); k2GCmeanfitness=k2GCsumfitness/sum(GCBCs+dt*0.5*k1GCBC);
- k2GCBC=((1-mu)*(GCBCs+dt*0.5*k1GCBC).*GCfitness/k2GCmeanfitness+mu/(length(GCfitness)-1)*(k2GCsumfitness-(GCBCs+dt*0.5*k1GCBC).*GCfitness)/k2GCsumfitness)*Rg;
+ k2GCBC=((1-mu)*(GCBCs+dt*0.5*k1GCBC).*GCfitness/k2GCmeanfitness+mu/(length(GCfitness)-1)*(k2GCsumfitness-(GCBCs+dt*0.5*k1GCBC).*GCfitness)/k2GCmeanfitness)*Rg;
 k3GCsumfitness=sum((GCBCs+dt*0.5*k2GCBC).*GCfitness); k3GCmeanfitness=k3GCsumfitness/sum(GCBCs+dt*0.5*k2GCBC);
- k3GCBC=((1-mu)*(GCBCs+dt*0.5*k2GCBC).*GCfitness/k3GCmeanfitness+mu/(length(GCfitness)-1)*(k3GCsumfitness-(GCBCs+dt*0.5*k2GCBC).*GCfitness)/k3GCsumfitness)*Rg;
+ k3GCBC=((1-mu)*(GCBCs+dt*0.5*k2GCBC).*GCfitness/k3GCmeanfitness+mu/(length(GCfitness)-1)*(k3GCsumfitness-(GCBCs+dt*0.5*k2GCBC).*GCfitness)/k3GCmeanfitness)*Rg;
 k4GCsumfitness=sum((GCBCs+dt*k3GCBC).*GCfitness); k4GCmeanfitness=k4GCsumfitness/sum(GCBCs+dt*k3GCBC);
- k4GCBC=((1-mu)*(GCBCs+dt*k3GCBC).*GCfitness/k4GCmeanfitness+mu/(length(GCfitness)-1)*(k4GCsumfitness-(GCBCs+dt*k3GCBC).*GCfitness)/k4GCsumfitness)*Rg;
+ k4GCBC=((1-mu)*(GCBCs+dt*k3GCBC).*GCfitness/k4GCmeanfitness+mu/(length(GCfitness)-1)*(k4GCsumfitness-(GCBCs+dt*k3GCBC).*GCfitness)/k4GCmeanfitness)*Rg;
 y=[y;dt/6*(k1GCBC+2*k2GCBC+2*k3GCBC+k4GCBC)];
 
     k1Abs=PCspf*BCs+PCgc*GCBCs-Kab*Abs.*fitness*Virus;

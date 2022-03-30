@@ -25,6 +25,8 @@ r=2;
 % RgArray=[1.4:.1:3.5];
 RsArray=[.9: .1 :1.2]*r;
 RgArray=[1.4,1.4:.1:3.5];
+% RsArray=r;
+% RgArray=r;
 % RsArray=[2,4];
 % RgArray=[2,4];
 % RsArray=[.7,1.3]*r;
@@ -35,7 +37,9 @@ RgArray=[1.4,1.4:.1:3.5];
 % Costarray=zeros(length(RsArray),length(RsArray));
 % VirusCell=cell(length(RsArray),1);
 Virus2Cell=cell(length(RsArray),length(RgArray),6);
-
+DistCell=cell(length(RgArray));
+GC2DistCell=cell(length(RsArray),length(RgArray),6);
+SPF2DistCell=cell(length(RsArray),length(RgArray),6);
 
 k=0
 
@@ -204,20 +208,36 @@ end
 
 
 Virus2Cell{m,k,j}=Virus;
-end
-end
-end
-
 
 if WeakMem==1
-save(['FunctionEv_V0',num2str(V0),'_BC0',num2str(BC0),'_Kab',num2str(Kab),'_Ps',num2str(PCspf),'_Pg',num2str(PCgc),'WeakMemoryContinuous.mat'],'VirusCell','RsArray','RgArray','Virus2Cell');
+     GCBCs(301,GCfitness>=0.5)=0; GCBCDist2(1,:)=GCBCs(301,:)/sum(GCBCs(301,:));
 elseif WeakMem==2
- save(['FunctionEv_V0',num2str(V0),'_BC0',num2str(BC0),'_Kab',num2str(Kab),'_Ps',num2str(PCspf),'_Pg',num2str(PCgc),'WeakMemoryLinearContinuous.mat'],'VirusCell','RsArray','RgArray','Virus2Cell');
+    GCBCs(301,GCfitness>=0.5)=GCBCs(301,GCfitness>=0.5).*(1-GCfitness(GCfitness>=0.5));
+GCBCDist2(1,:)=GCBCs(301,:)/sum(GCBCs(301,:));
+elseif WeakMem==3
+GCBCDist2(1,:)=GCBCs(301,:)/sum(GCBCs(301,:));
+else
+    GCBCDist2(1,:)=GCBCs(t,:)/sum(GCBCs(t,:));
+end
+BCDist2(1,:)=BCs(t,:)/sum(BCs(t,:));
+
+GC2DistCell{m,k,j}=GCBCDist2;
+SPF2DistCell{m,k,j}=BCDist2;
+end
+end
+end
+
+Flagstr=['FunctionEvCont_V0',num2str(V0),'_BC0',num2str(BC0),'_Kab',num2str(Kab),'_Ps',num2str(PCspf),'_Pg',num2str(PCgc)];
+
+if WeakMem==1
+save([Flagstr,'WeakMemory.mat'],'RsArray','RgArray','Virus2Cell','DistCell','GC2DistCell','SPF2DistCell');
+elseif WeakMem==2
+ save([Flagstr,'WeakMemoryLinear.mat'],'RsArray','RgArray','Virus2Cell','DistCell','GC2DistCell','SPF2DistCell');
  elseif WeakMem==3
-  save(['FunctionEv_V0',num2str(V0),'_BC0',num2str(BC0),'_Kab',num2str(Kab),'_Ps',num2str(PCspf),'_Pg',num2str(PCgc),'TimeMemContinuous.mat'],'VirusCell','RsArray','RgArray','Virus2Cell');
+  save([Flagstr,'TimeMem.mat'],'RsArray','RgArray','Virus2Cell','DistCell','GC2DistCell','SPF2DistCell');
    
 else
-save(['FunctionEv_V0',num2str(V0),'_BC0',num2str(BC0),'_Kab',num2str(Kab),'_Ps',num2str(PCspf),'_Pg',num2str(PCgc),'Continuous.mat'],'VirusCell','RsArray','RgArray','Virus2Cell');
+save([Flagstr,'.mat'],'RsArray','RgArray','Virus2Cell','DistCell','GC2DistCell','SPF2DistCell');
 
 end
 
@@ -235,13 +255,13 @@ y=dt/6*(k1BC+2*k2BC+2*k3BC+k4BC);
 GCsumfitness=sum(GCBCs.*GCfitness);
     GCmeanfitness=GCsumfitness/sum(GCBCs);
 % GCBCs(t+1,:)=GCBCs+(0.5*GCBCs.*GCfitness/GCmeanfitness+0.5/(length(GCfitness)-1)*(GCsumfitness-GCBCs.*GCfitness)/GCsumfitness)*dt*Rg;
-k1GCBC=(0.95*GCBCs.*GCfitness/GCmeanfitness+0.05/(length(GCfitness)-1)*(GCsumfitness-GCBCs.*GCfitness)/GCsumfitness)*Rg;
+k1GCBC=(0.95*GCBCs.*GCfitness/GCmeanfitness+0.05/(length(GCfitness)-1)*(GCsumfitness-GCBCs.*GCfitness)/GCmeanfitness)*Rg; %%%%THIS IS WRONG HAVE TO CHANGE IT TO MEANFITNESS
  k2GCsumfitness=sum((GCBCs+dt*0.5*k1GCBC).*GCfitness); k2GCmeanfitness=k2GCsumfitness/sum(GCBCs+dt*0.5*k1GCBC);
- k2GCBC=(0.95*(GCBCs+dt*0.5*k1GCBC).*GCfitness/k2GCmeanfitness+0.05/(length(GCfitness)-1)*(k2GCsumfitness-(GCBCs+dt*0.5*k1GCBC).*GCfitness)/k2GCsumfitness)*Rg;
+ k2GCBC=(0.95*(GCBCs+dt*0.5*k1GCBC).*GCfitness/k2GCmeanfitness+0.05/(length(GCfitness)-1)*(k2GCsumfitness-(GCBCs+dt*0.5*k1GCBC).*GCfitness)/k2GCmeanfitness)*Rg;
 k3GCsumfitness=sum((GCBCs+dt*0.5*k2GCBC).*GCfitness); k3GCmeanfitness=k3GCsumfitness/sum(GCBCs+dt*0.5*k2GCBC);
- k3GCBC=(0.95*(GCBCs+dt*0.5*k2GCBC).*GCfitness/k3GCmeanfitness+0.05/(length(GCfitness)-1)*(k3GCsumfitness-(GCBCs+dt*0.5*k2GCBC).*GCfitness)/k3GCsumfitness)*Rg;
+ k3GCBC=(0.95*(GCBCs+dt*0.5*k2GCBC).*GCfitness/k3GCmeanfitness+0.05/(length(GCfitness)-1)*(k3GCsumfitness-(GCBCs+dt*0.5*k2GCBC).*GCfitness)/k3GCmeanfitness)*Rg;
 k4GCsumfitness=sum((GCBCs+dt*k3GCBC).*GCfitness); k4GCmeanfitness=k4GCsumfitness/sum(GCBCs+dt*k3GCBC);
- k4GCBC=(0.95*(GCBCs+dt*k3GCBC).*GCfitness/k4GCmeanfitness+0.05/(length(GCfitness)-1)*(k4GCsumfitness-(GCBCs+dt*k3GCBC).*GCfitness)/k4GCsumfitness)*Rg;
+ k4GCBC=(0.95*(GCBCs+dt*k3GCBC).*GCfitness/k4GCmeanfitness+0.05/(length(GCfitness)-1)*(k4GCsumfitness-(GCBCs+dt*k3GCBC).*GCfitness)/k4GCmeanfitness)*Rg;
 y=[y;dt/6*(k1GCBC+2*k2GCBC+2*k3GCBC+k4GCBC)];
 
     k1Abs=PCspf*BCs+PCgc*GCBCs-Kab*Abs.*fitness*Virus;
